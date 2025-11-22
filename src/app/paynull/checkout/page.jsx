@@ -3,6 +3,10 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation"; 
 
+const MAX_CARD_LENGTH = 16;
+const MIN_CARD_LENGTH = 13;
+const FORMATTED_CARD_LENGTH = 19; // 16 digits + 3 spaces
+
 export default function PayNullCheckout() {
   const params = useSearchParams();
   const pi = params.get("pi");
@@ -26,8 +30,10 @@ export default function PayNullCheckout() {
   const formatCardNumber = (value) => {
     // Remove all non-digits
     const cleaned = value.replace(/\D/g, '');
+    // Limit to MAX_CARD_LENGTH digits
+    const limited = cleaned.substring(0, MAX_CARD_LENGTH);
     // Add space every 4 digits
-    const formatted = cleaned.match(/.{1,4}/g)?.join(' ') || cleaned;
+    const formatted = limited.match(/.{1,4}/g)?.join(' ') || limited;
     return formatted;
   };
 
@@ -47,7 +53,7 @@ export default function PayNullCheckout() {
       return;
     }
 
-    if (cleanCard.length < 13) {
+    if (cleanCard.length < MIN_CARD_LENGTH) {
       setError("Please enter a valid card number");
       return;
     }
@@ -141,7 +147,7 @@ export default function PayNullCheckout() {
             <input
               id="card"
               type="text"
-              maxLength="19"
+              maxLength={FORMATTED_CARD_LENGTH}
               className={
                 `w-full border px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 font-mono text-base ` +
                 (error 

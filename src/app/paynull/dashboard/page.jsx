@@ -19,10 +19,15 @@ export default function PayNullDashboard() {
   }, []);
 
   const formatAmount = (amount, currency) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency.toUpperCase(),
-    }).format(amount / 100);
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency.toUpperCase(),
+      }).format(amount / 100);
+    } catch (err) {
+      // Fallback if currency is invalid
+      return `${(amount / 100).toFixed(2)} ${currency.toUpperCase()}`;
+    }
   };
 
   return (
